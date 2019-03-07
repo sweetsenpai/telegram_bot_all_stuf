@@ -4,6 +4,7 @@ from telebot import apihelper
 from money import money_status
 from weatherapi import weather
 from find_news import get_news
+from cats import cat
 #apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@phobos.public.opennetwork.cc:1090'}
 apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@deimos.public.opennetwork.cc:1090'}
 TOKEN = "559015083:AAFmBW3TV6NEX579WlMEmgDczsuLekDxPIg"
@@ -26,6 +27,9 @@ def send_msg(message):
     bot.send_message(message.chat.id, '😉\ncreated by: @Sweet_Sempai\n github: https://github.com/sweetsenpai')
 
 
+"""------------------------------------------functions---------------------------------------------------------------"""
+
+
 @bot.message_handler(func=lambda message: True, content_types=['location'])
 def user_location(message):
     lat = message.location.latitude
@@ -33,21 +37,36 @@ def user_location(message):
     bot.send_message(message.chat.id, weather(lat, lon))
 
 
+@bot.message_handler(content_types=['text'])
+def send_msg(message):
+    if message.text == '🐱':
+        bot.send_message(message.chat.id, text=cat(), reply_to_message_id=message.message_id)
+    else:
+        bot.send_message(message.chat.id, text='Я пока не знаю что с этим делать:(',
+                         reply_to_message_id=message.message_id)
+
+
 @bot.message_handler(commands=['buttons'])
 def buttons_start(message):
-    user_markup = telebot.types.ReplyKeyboardMarkup(True)
-    but_1 = telebot.types.KeyboardButton('/weather☁', request_location=True)
-    but_2 = telebot.types.KeyboardButton('/start')
-    but_3 = telebot.types.KeyboardButton('/help')
-    but_4 = telebot.types.KeyboardButton('/info')
-    but_5 = telebot.types.KeyboardButton('/news📰')
-    but_6 = telebot.types.KeyboardButton('/money💰')
-#    user_markup.row('/start', '/help', '/info')
-#   user_markup.row(but_1, '/news📰', '/money💰')
-    user_markup.add(but_1, but_2, but_3,
-                    but_4, but_5, but_6)
-    bot.send_message(message.chat.id, "Лови кнопки приятель⚙️", reply_markup=user_markup)
-   
+    first_markup = telebot.types.ReplyKeyboardMarkup(True)
+    but_start = telebot.types.KeyboardButton('/start')
+    but_help = telebot.types.KeyboardButton('/help')
+    but_info = telebot.types.KeyboardButton('/info')
+    but_com = telebot.types.KeyboardButton('/more⚙️')
+    first_markup.add(but_start, but_help, but_info, but_com,)
+    bot.send_message(message.chat.id, "Лови кнопки приятель⚙️", reply_markup=first_markup)
+
+
+@bot.message_handler(commands=['more⚙️'])
+def buttons_more(message):
+    func_markup = telebot.types.ReplyKeyboardMarkup(True)
+    but_wth = telebot.types.KeyboardButton('/weather☁', request_location=True)
+    but_nws = telebot.types.KeyboardButton('/news📰')
+    but_mny = telebot.types.KeyboardButton('/money💰')
+    but_first = telebot.types.KeyboardButton('/buttons')
+    func_markup.add(but_wth, but_nws, but_mny, but_first,)
+    bot.send_message(message.chat.id, "Лови ещё кнопки приятель⚙️", reply_markup=func_markup)
+
 
 @bot.message_handler(commands=['money💰'])
 def money(message):
@@ -62,10 +81,10 @@ def money(message):
 @bot.message_handler(commands=['news📰'])
 def inline(message):
     key = telebot.types.InlineKeyboardMarkup(True)
-    but_1 = telebot.types.InlineKeyboardButton(text='Лента.ру', callback_data='https://m.lenta.ru')
-    but_2 = telebot.types.InlineKeyboardButton(text='Медуза', callback_data='https://meduza.io')
-    but_3 = telebot.types.InlineKeyboardButton(text='РИА новости', callback_data='https://ria.ru')
-    key.row(but_1, but_2, but_3)
+    but_lenta = telebot.types.InlineKeyboardButton(text='Лента.ру', callback_data='https://m.lenta.ru')
+    but_med = telebot.types.InlineKeyboardButton(text='Медуза', callback_data='https://meduza.io')
+    but_ria = telebot.types.InlineKeyboardButton(text='РИА новости', callback_data='https://ria.ru')
+    key.row(but_lenta, but_med, but_ria)
     bot.send_message(message.chat.id, "НОВОСТИ", reply_markup=key)
 
 
@@ -96,7 +115,6 @@ def call_back(call):
                               text=call.data, reply_markup=news_key)
         bot.send_message(call.message.chat.id, text='Главная новость на данный момент:')
         bot.send_message(call.message.chat.id, get_news(call.data))
-
 
 
 while True:

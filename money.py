@@ -41,10 +41,3 @@ def money_status(status):
                 value_money) + "\n")
 
     return msg_text_money
-
-"""
-current_data = str(str(time.localtime()[0]) + "-0" + str(time.localtime()[1]) + "-" + str(time.localtime()[2]))
-rates = ExchangeRates(current_data, locale_en=False)
-for i in rates.rates:
-    print(rates[i.code].code)
-"""
