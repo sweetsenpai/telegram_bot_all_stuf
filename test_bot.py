@@ -7,7 +7,7 @@ from find_news import get_news
 from cats import cat
 #apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@phobos.public.opennetwork.cc:1090'}
 apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@deimos.public.opennetwork.cc:1090'}
-TOKEN = "559015083:AAFmBW3TV6NEX579WlMEmgDczsuLekDxPIg"
+TOKEN = "----------------------------------"
 bot = telebot.TeleBot(token=TOKEN)
 
 
