@@ -4,7 +4,7 @@ from telebot import apihelper
 from money import money_status
 from weatherapi import weather
 from find_news import get_news
-from cats import cat
+import cats
 #apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@phobos.public.opennetwork.cc:1090'}
 apihelper.proxy = {'https': 'socks5://352354383:RiqvhK6t@deimos.public.opennetwork.cc:1090'}
 TOKEN = "559015083:AAFmBW3TV6NEX579WlMEmgDczsuLekDxPIg"
@@ -35,29 +35,26 @@ def user_location(message):
     lat = message.location.latitude
     lon = message.location.longitude
     bot.send_message(message.chat.id, weather(lat, lon))
-
+"""
 
 @bot.message_handler(content_types=['text'])
 def send_msg(message):
     if message.text == '🐱':
         bot.send_message(message.chat.id, text=cat(), reply_to_message_id=message.message_id)
-    else:
-        bot.send_message(message.chat.id, text='Я пока не знаю что с этим делать:(',
-                         reply_to_message_id=message.message_id)
 
-
+"""
 @bot.message_handler(commands=['buttons'])
 def buttons_start(message):
     first_markup = telebot.types.ReplyKeyboardMarkup(True)
     but_start = telebot.types.KeyboardButton('/start')
     but_help = telebot.types.KeyboardButton('/help')
     but_info = telebot.types.KeyboardButton('/info')
-    but_com = telebot.types.KeyboardButton('/more⚙️')
+    but_com = telebot.types.KeyboardButton('/more')
     first_markup.add(but_start, but_help, but_info, but_com,)
     bot.send_message(message.chat.id, "Лови кнопки приятель⚙️", reply_markup=first_markup)
 
 
-@bot.message_handler(commands=['more⚙️'])
+@bot.message_handler(commands=['more'])
 def buttons_more(message):
     func_markup = telebot.types.ReplyKeyboardMarkup(True)
     but_wth = telebot.types.KeyboardButton('/weather☁', request_location=True)
@@ -88,12 +85,27 @@ def inline(message):
     bot.send_message(message.chat.id, "НОВОСТИ", reply_markup=key)
 
 
+@bot.message_handler(commands=['cats'])
+def cat_pic(message):
+    key_cat = telebot.types.InlineKeyboardMarkup(True)
+    but_pic = telebot.types.InlineKeyboardButton(text='КАРТИНКА', callback_data='pic')
+    but_gif = telebot.types.InlineKeyboardButton(text='ГИФКА', callback_data='gif')
+    key_cat.row(but_pic, but_gif)
+    bot.send_photo(message.chat.id, 'https://pp.userapi.com/c846524/v846524528/1c75bc/_xJsz6A9Wec.jpg',
+                   reply_markup=key_cat)
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def call_back(call):
     news_key = telebot.types.InlineKeyboardMarkup(True)
     but_link = telebot.types.InlineKeyboardButton(text='Перейти на сайт', url=call.data)
-
     news_key.add(but_link)
+
+    key_cat = telebot.types.InlineKeyboardMarkup(True)
+    but_pic = telebot.types.InlineKeyboardButton(text='КАРТИНКА', callback_data='pic')
+    but_gif = telebot.types.InlineKeyboardButton(text='ГИФКА', callback_data='gif')
+    key_cat.row(but_pic, but_gif)
+
     if call.data == 'EUR':
         bot.send_message(call.message.chat.id, money_status('EUR'))
     elif call.data == 'USD':
@@ -115,6 +127,10 @@ def call_back(call):
                               text=call.data, reply_markup=news_key)
         bot.send_message(call.message.chat.id, text='Главная новость на данный момент:')
         bot.send_message(call.message.chat.id, get_news(call.data))
+    elif call.data == 'pic':
+        bot.send_photo(call.message.chat.id, cats.get_cats('pic'), reply_markup=key_cat)
+    elif call.data == 'gif':
+        bot.send_document(call.message.chat.id, cats.get_cats('gif'), reply_markup=key_cat)
 
 
 while True:

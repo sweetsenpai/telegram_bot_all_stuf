@@ -26,7 +26,7 @@ def get_news(link):
                 a = a + 'https://meduza.io/' + url + '\n'
                 return a
         elif link == 'https://m.lenta.ru':
-            divs = soup.find_all('li', attrs={'class': 'b-list-item b-list-item_news', 'data-partslug': 'text'})
+            divs = soup.find_all('div', attrs={'class': 'b-section'})
             for div in divs:
                 url = div.find('a', attrs={'class': 'b-list-item__link'})['href']
                 a = ('https://m.lenta.ru/' + url)
